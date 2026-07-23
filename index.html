@@ -135,51 +135,51 @@
 
         /* Tela 1: espaco vazio a esquerda do mascote (acena a direita) */
         #screen1 .glass-card {
-            width: clamp(420px, 40vw, 820px);
-            padding: 3.2% 2.8%;
+            width: clamp(460px, 44vw, 900px);
+            padding: 3.5% 3.1%;
         }
 
         #screen1 .tag-header {
-            font-size: 0.78rem;
-            padding: 6px 12px;
-            margin-bottom: 12px;
+            font-size: 0.86rem;
+            padding: 7px 13px;
+            margin-bottom: 13px;
         }
 
         #screen1 .sub-heading {
-            font-size: 1.3rem;
+            font-size: 1.43rem;
             line-height: 1.4;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         #screen1 .timeline-grid {
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        #screen1 .timeline-item {
-            padding: 12px 10px;
-            border-radius: 14px;
-        }
-
-        #screen1 .timeline-badge {
-            font-size: 0.8rem;
-            padding: 5px 10px;
-            margin-bottom: 6px;
-        }
-
-        #screen1 .timeline-title {
-            font-size: 0.78rem;
-        }
-
-        #screen1 .prize-banner {
-            font-size: 0.88rem;
-            padding: 14px 16px;
+            gap: 11px;
             margin-bottom: 18px;
         }
 
+        #screen1 .timeline-item {
+            padding: 13px 11px;
+            border-radius: 15px;
+        }
+
+        #screen1 .timeline-badge {
+            font-size: 0.88rem;
+            padding: 6px 11px;
+            margin-bottom: 7px;
+        }
+
+        #screen1 .timeline-title {
+            font-size: 0.86rem;
+        }
+
+        #screen1 .prize-banner {
+            font-size: 0.97rem;
+            padding: 15px 18px;
+            margin-bottom: 20px;
+        }
+
         #screen1 .btn-cta {
-            font-size: 1.15rem;
-            padding: 16px;
+            font-size: 1.27rem;
+            padding: 18px;
         }
         /* Tela 2: mascote so na parte esquerda, sobra bastante espaco a direita */
         #screen2 .glass-card { width: clamp(520px, 55vw, 1120px); }
@@ -585,6 +585,164 @@
         @keyframes loadingFill {
             from { width: 0%; }
             to { width: 100%; }
+        }
+
+        /* ==========================================================================
+           RESPONSIVO: adapta os blocos de conteudo (glass-card) para qualquer tela
+           ========================================================================== */
+        @media (max-width: 700px) {
+            body, html {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .screen {
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .stage,
+            #screen1 .stage,
+            #screen2 .stage,
+            #screen3 .stage,
+            #screen4 .stage {
+                justify-content: center;
+                align-items: center;
+                padding: 84px 5% 28px;
+            }
+
+            .glass-card,
+            #screen1 .glass-card,
+            #screen2 .glass-card,
+            #screen3 .glass-card,
+            #screen4 .glass-card {
+                width: 100%;
+                max-width: 540px;
+                padding: 24px 20px;
+                border-radius: 22px;
+            }
+
+            .tag-header,
+            #screen1 .tag-header {
+                font-size: 0.74rem;
+                padding: 5px 11px;
+                margin-bottom: 10px;
+            }
+
+            h1 {
+                font-size: clamp(1.3rem, 6vw, 1.8rem);
+                margin-bottom: 10px;
+            }
+
+            p.sub-heading,
+            #screen1 .sub-heading {
+                font-size: clamp(0.95rem, 4vw, 1.05rem);
+                line-height: 1.4;
+                margin-bottom: 16px;
+            }
+
+            .timeline-grid,
+            #screen1 .timeline-grid {
+                gap: 8px;
+                margin-bottom: 14px;
+            }
+
+            .timeline-item,
+            #screen1 .timeline-item {
+                padding: 10px 6px;
+                border-radius: 12px;
+            }
+
+            .timeline-badge,
+            #screen1 .timeline-badge {
+                font-size: 0.72rem;
+                padding: 4px 8px;
+                margin-bottom: 5px;
+            }
+
+            .timeline-title,
+            #screen1 .timeline-title {
+                font-size: 0.7rem;
+            }
+
+            .prize-banner,
+            #screen1 .prize-banner {
+                font-size: 0.82rem;
+                padding: 11px 13px;
+                margin-bottom: 14px;
+            }
+
+            .guidelines-list {
+                gap: 8px;
+            }
+
+            .guidelines-list li {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+
+            .alert-box {
+                font-size: 0.8rem;
+                padding: 11px;
+            }
+
+            .dept-grid {
+                grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+                gap: 6px;
+            }
+
+            .dept-chip {
+                font-size: 0.76rem;
+                padding: 8px 6px;
+            }
+
+            .btn-cta,
+            #screen1 .btn-cta {
+                font-size: 1.05rem;
+                padding: 14px;
+            }
+
+            input[type="text"] {
+                font-size: 0.95rem;
+                padding: 12px;
+                padding-right: 42px;
+            }
+
+            h1.thanks-title {
+                font-size: clamp(1.45rem, 6.5vw, 1.9rem);
+            }
+
+            .stepper {
+                top: 12px;
+                padding: 6px 12px;
+                gap: 6px;
+            }
+
+            .step-dot { width: 7px; height: 7px; }
+            .step-dot.active { width: 18px; }
+            .step-line { width: 12px; }
+
+            #btn-admin { top: 6px; right: 6px; width: 34px; height: 34px; }
+        }
+
+        @media (max-width: 400px) {
+            .guidelines-list {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-card,
+            #screen1 .glass-card,
+            #screen2 .glass-card,
+            #screen3 .glass-card,
+            #screen4 .glass-card {
+                padding: 18px 14px;
+            }
+
+            h1 {
+                font-size: clamp(1.2rem, 6.5vw, 1.5rem);
+            }
         }
     </style>
 </head>
