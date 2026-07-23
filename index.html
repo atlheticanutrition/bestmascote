@@ -134,7 +134,53 @@
         }
 
         /* Tela 1: espaco vazio a esquerda do mascote (acena a direita) */
-        #screen1 .glass-card { width: clamp(480px, 48vw, 980px); }
+        #screen1 .glass-card {
+            width: clamp(580px, 58vw, 1180px);
+            padding: 4.6% 4%;
+        }
+
+        #screen1 .tag-header {
+            font-size: 1rem;
+            padding: 8px 16px;
+            margin-bottom: 18px;
+        }
+
+        #screen1 .sub-heading {
+            font-size: 1.75rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        #screen1 .timeline-grid {
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        #screen1 .timeline-item {
+            padding: 18px 14px;
+            border-radius: 18px;
+        }
+
+        #screen1 .timeline-badge {
+            font-size: 1rem;
+            padding: 7px 14px;
+            margin-bottom: 8px;
+        }
+
+        #screen1 .timeline-title {
+            font-size: 0.98rem;
+        }
+
+        #screen1 .prize-banner {
+            font-size: 1.12rem;
+            padding: 20px 24px;
+            margin-bottom: 26px;
+        }
+
+        #screen1 .btn-cta {
+            font-size: 1.5rem;
+            padding: 22px;
+        }
         /* Tela 2: mascote so na parte esquerda, sobra bastante espaco a direita */
         #screen2 .glass-card { width: clamp(520px, 55vw, 1120px); }
         /* Tela 3: dois mascotes nas bordas, vao central mais estreito */
@@ -508,6 +554,37 @@
             border-radius: 4px;
             margin-bottom: 18px;
         }
+
+        .loading-wrap { width: 100%; }
+
+        .loading-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--texto-corpo);
+            margin-bottom: 8px;
+        }
+
+        .loading-track {
+            width: 100%;
+            height: 10px;
+            background: rgba(20, 19, 17, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .loading-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--dourado);
+            border-radius: 10px;
+            animation: loadingFill 5s linear forwards;
+        }
+
+        @keyframes loadingFill {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -563,15 +640,15 @@
     <div id="screen2" class="screen">
         <div class="stage">
             <div class="glass-card">
-                <div class="tag-header"><span class="estrela">&#10022;</span> DIRETRIZES DO CONCURSO</div>
+                <div class="tag-header">DIRETRIZES DO CONCURSO</div>
                 <h1>ANTES DE DAR UM NOME&hellip;</h1>
                 <p class="sub-heading">Nosso BEST Amigo estar&aacute; presente nos comunicados, eventos e em diversos momentos da nossa rotina. Por isso, escolha um nome que seja:</p>
 
                 <ul class="guidelines-list">
-                    <li>&#10024; Criativo</li>
-                    <li>&#128161; F&aacute;cil de lembrar</li>
-                    <li>&#129309; Respeitoso</li>
-                    <li>&#128059; A cara dele</li>
+                    <li>Criativo</li>
+                    <li>F&aacute;cil de lembrar</li>
+                    <li>Respeitoso</li>
+                    <li>A cara dele</li>
                 </ul>
 
                 <div class="alert-box">
@@ -617,6 +694,7 @@
                         <button type="button" class="dept-chip" onclick="selecionarOption('Produ&ccedil;&atilde;o', this)">Produ&ccedil;&atilde;o</button>
                         <button type="button" class="dept-chip" onclick="selecionarOption('Marketing', this)">Marketing</button>
                         <button type="button" class="dept-chip" onclick="selecionarOption('Trade Marketing', this)">Trade Marketing</button>
+                        <button type="button" class="dept-chip" onclick="selecionarOption('Projetos', this)">Projetos</button>
                         <button type="button" class="dept-chip" onclick="selecionarOption('Log&iacute;stica', this)">Log&iacute;stica</button>
                         <button type="button" class="dept-chip" onclick="selecionarOption('P&amp;D', this)">P&amp;D</button>
                         <button type="button" class="dept-chip" onclick="selecionarOption('Regulat&oacute;rios', this)">Regulat&oacute;rios</button>
@@ -649,7 +727,12 @@
                 <p style="color: var(--texto-corpo); font-size: 1.1rem; line-height: 1.5; margin-bottom: 24px;">
                     De 27 a 29 de julho, ser&atilde;o escolhidos os 3 finalistas. Depois disso, todos poder&atilde;o votar e, finalmente&hellip; eu vou ganhar um nome oficial!
                 </p>
-                <p style="font-size: 1.45rem; font-weight: 800; color: var(--dourado-escuro);">At&eacute; breve!</p>
+                <p style="font-size: 1.45rem; font-weight: 800; color: var(--dourado-escuro); margin-bottom: 22px;">At&eacute; breve!</p>
+
+                <div class="loading-wrap">
+                    <div class="loading-label">Preparando para o pr&oacute;ximo participante&hellip;</div>
+                    <div class="loading-track"><div class="loading-fill"></div></div>
+                </div>
             </div>
         </div>
     </div>
@@ -779,8 +862,16 @@
             goToScreen(4);
 
             setTimeout(() => {
-                location.reload();
-            }, 7000);
+                resetParaProximoParticipante();
+            }, 5000);
+        }
+
+        function resetParaProximoParticipante() {
+            document.getElementById('input-mascote').value = '';
+            document.getElementById('input-nome').value = '';
+            departamentoSelecionado = '';
+            document.querySelectorAll('.dept-chip').forEach(chip => chip.classList.remove('selected'));
+            goToScreen(1);
         }
 
         function extrairRelatorio() {
