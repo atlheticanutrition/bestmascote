@@ -107,7 +107,15 @@
 
         .brand-mark span { color: var(--muted); font-weight: 500; }
 
-        .step-track { display: flex; align-items: center; gap: clamp(6px, .8vw, 12px); }
+        .step-track {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(6px, .8vw, 12px);
+            margin-top: var(--space-3);
+        }
+
+        #screen1 .step-track { max-width: clamp(480px, 60vw, 860px); width: 100%; }
 
         .step-dot {
             width: clamp(8px, .9vw, 12px);
@@ -724,12 +732,6 @@
 
     <header class="kiosk-topbar">
         <div class="brand-mark">ATLHETICA <span>NUTRITION®</span></div>
-        <div class="step-track" id="step-track">
-            <span class="step-dot" data-step="1"></span>
-            <span class="step-dot" data-step="2"></span>
-            <span class="step-dot" data-step="3"></span>
-            <span class="step-dot" data-step="4"></span>
-        </div>
     </header>
 
     <!-- TELA 01 - ABERTURA -->
@@ -746,6 +748,12 @@
             </div>
 
             <button class="btn-cta" onclick="goToScreen(2)">Prosseguir</button>
+        </div>
+        <div class="step-track">
+            <span class="step-dot" data-step="1"></span>
+            <span class="step-dot" data-step="2"></span>
+            <span class="step-dot" data-step="3"></span>
+            <span class="step-dot" data-step="4"></span>
         </div>
     </div>
 
@@ -805,6 +813,12 @@
 
             <button class="btn-cta" onclick="validarTela2()">Ir para a votação</button>
         </div>
+        <div class="step-track">
+            <span class="step-dot" data-step="1"></span>
+            <span class="step-dot" data-step="2"></span>
+            <span class="step-dot" data-step="3"></span>
+            <span class="step-dot" data-step="4"></span>
+        </div>
     </div>
 
     <!-- TELA 03 - ESCOLHA DO MASCOTE -->
@@ -842,6 +856,12 @@
 
             <button class="btn-cta" id="btn-enviar" onclick="enviarVoto()">Confirmar meu voto</button>
         </div>
+        <div class="step-track">
+            <span class="step-dot" data-step="1"></span>
+            <span class="step-dot" data-step="2"></span>
+            <span class="step-dot" data-step="3"></span>
+            <span class="step-dot" data-step="4"></span>
+        </div>
     </div>
 
     <!-- TELA 04 - AGRADECIMENTO -->
@@ -857,6 +877,12 @@
             </p>
             <p style="font-size: var(--fs-lead); font-weight: 700; color: var(--cream);">Até lá!</p>
             <div class="reload-bar"><div class="reload-bar-fill"></div></div>
+        </div>
+        <div class="step-track">
+            <span class="step-dot" data-step="1"></span>
+            <span class="step-dot" data-step="2"></span>
+            <span class="step-dot" data-step="3"></span>
+            <span class="step-dot" data-step="4"></span>
         </div>
     </div>
 
