@@ -119,14 +119,24 @@
         }
 
         .step-dot.done { background: var(--cream-dim); border-color: var(--cream-dim); }
-        .step-dot.active { background: var(--cream); border-color: var(--cream); width: clamp(20px, 2.4vw, 30px); border-radius: 6px; box-shadow: 0 0 14px rgba(232,228,217,.6); }
+        .step-dot.active {
+            background: var(--cream);
+            border-color: var(--cream);
+            width: clamp(20px, 2.4vw, 30px);
+            border-radius: 6px;
+            animation: dotPulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(232,228,217,.55); }
+            50% { box-shadow: 0 0 20px rgba(232,228,217,.95); }
+        }
 
         /* ===== TELAS ===== */
         .screen {
             display: none;
-            width: 100%;
-            height: calc(var(--vh, 1vh) * 100);
-            height: 100svh;
+            position: fixed;
+            inset: 0;
             padding: calc(var(--topbar-h) + var(--space-3)) clamp(16px, 4vw, 64px) var(--space-4);
             background-size: cover;
             background-position: center;
@@ -139,17 +149,42 @@
 
         .screen::-webkit-scrollbar { display: none; }
 
-        .screen.active { display: flex; flex-direction: column; animation: screenIn .45s cubic-bezier(.22,1,.36,1); }
+        .screen.active { display: flex; flex-direction: column; z-index: 2; animation: screenIn .5s cubic-bezier(.22,1,.36,1); }
+
+        /* Transição de saída: a tela anterior recua enquanto a nova entra por cima */
+        .screen.active.leaving { z-index: 1; animation: screenOut .3s ease forwards; pointer-events: none; }
 
         @keyframes screenIn {
             from { opacity: 0; transform: translateY(18px) scale(.985); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        @keyframes screenOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-14px) scale(.97); }
+        }
+
+        /* Ritmo de entrada dos elementos do cartão: cada bloco aparece em sequência */
+        .screen.active .glass-card > * {
+            animation: contentIn .55s cubic-bezier(.22,1,.36,1) backwards;
+        }
+        .screen.active .glass-card > *:nth-child(1) { animation-delay: .05s; }
+        .screen.active .glass-card > *:nth-child(2) { animation-delay: .11s; }
+        .screen.active .glass-card > *:nth-child(3) { animation-delay: .17s; }
+        .screen.active .glass-card > *:nth-child(4) { animation-delay: .23s; }
+        .screen.active .glass-card > *:nth-child(5) { animation-delay: .29s; }
+        .screen.active .glass-card > *:nth-child(6) { animation-delay: .35s; }
+
+        @keyframes contentIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         #screen1 {
             background-image: linear-gradient(115deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.32) 42%, rgba(0,0,0,.08) 70%), url('tela1.jpg');
             justify-content: center;
             align-items: flex-start;
+            padding-left: clamp(40px, 9vw, 160px);
         }
         #screen2 { background-image: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,0,0,.65)), url('tela2.jpg'); }
         #screen3 { background-image: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,0,0,.65)), url('tela3.jpg'); }
@@ -176,7 +211,18 @@
             margin: auto;
         }
 
-        .glass-card-side { max-width: min(92vw, 540px); text-align: left; }
+        .glass-card-side { max-width: clamp(480px, 60vw, 860px); text-align: left; margin: 0; }
+
+        /* Tela 1: painel ocupa toda a área reservada à esquerda, com ritmo vertical organizado */
+        #screen1 .glass-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: var(--space-3);
+            min-height: clamp(380px, 60vh, 660px);
+        }
+
+        #screen1 .glass-card > * { margin: 0; }
 
         .tag-header {
             display: inline-flex;
@@ -367,7 +413,21 @@
             justify-content: space-between;
             color: var(--ink);
             position: relative;
+            overflow: hidden;
         }
+
+        .vote-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(232,228,217,.35), transparent 65%);
+            opacity: 0;
+            transform: scale(.4);
+            transition: transform .5s ease, opacity .5s ease;
+            pointer-events: none;
+        }
+
+        .vote-card:active::after { opacity: 1; transform: scale(1); transition: transform .06s ease, opacity .06s ease; }
 
         .vote-card:active { transform: scale(.97); }
 
@@ -411,7 +471,15 @@
             padding: clamp(6px, 1vw, 14px);
         }
 
-        .mascot-img-container img { width: 100%; height: 100%; object-fit: contain; }
+        .mascot-img-container img { width: 100%; height: 100%; object-fit: contain; animation: mascotFloat 3.6s ease-in-out infinite; }
+
+        .vote-card:nth-child(2) .mascot-img-container img { animation-delay: .4s; }
+        .vote-card:nth-child(3) .mascot-img-container img { animation-delay: .8s; }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5%); }
+        }
 
         .mascot-name { font-size: var(--fs-name); font-weight: 700; text-transform: uppercase; color: var(--ink); }
 
@@ -430,8 +498,21 @@
             box-shadow: 0 14px 32px rgba(232,228,217,.25);
             margin-top: var(--space-2);
             transition: transform .12s ease, box-shadow .12s ease;
+            position: relative;
+            overflow: hidden;
         }
 
+        .btn-cta::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(0,0,0,.18), transparent 65%);
+            opacity: 0;
+            transform: scale(.4);
+            transition: transform .5s ease, opacity .5s ease;
+        }
+
+        .btn-cta:active::after { opacity: 1; transform: scale(1); transition: transform .06s ease, opacity .06s ease; }
         .btn-cta:active { transform: scale(.97); box-shadow: 0 6px 16px rgba(232,228,217,.2); }
         .btn-cta:disabled { opacity: .45; }
 
@@ -454,7 +535,24 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto var(--space-3);
+            position: relative;
             animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        .success-icon::before, .success-icon::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--cream-dim);
+            animation: ringPulse 1.8s ease-out infinite;
+        }
+
+        .success-icon::after { animation-delay: .9s; }
+
+        @keyframes ringPulse {
+            from { transform: scale(1); opacity: .8; }
+            to { transform: scale(1.9); opacity: 0; }
         }
 
         @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -638,13 +736,13 @@
     <div id="screen1" class="screen active">
         <div class="glass-card glass-card-side">
             <div class="tag-header">Atlhetica Nutrition® • Concurso Cultural</div>
-            <h1>Escolha do novo mascote!</h1>
+            <h1>Escolha do nome mascote!</h1>
             <p class="sub-heading">
                 Durante o nosso <strong>Mini Workshop Especial Dia do Amigo</strong>, recebemos diversas sugestões de nomes para o novo mascote da Atlhetica Nutrition®. Depois de analisar todas as ideias, chegamos aos 3 nomes finalistas.
             </p>
             <div class="cta-notice">
                 <span class="emoji">🔥</span>
-                <strong>Agora chegou a hora de escolher o vencedor. E essa decisão é de todos nós.</strong>
+                <strong>Agora chegou a hora de escolher o vencedor.<br>E essa decisão é de todos nós.</strong>
             </div>
 
             <button class="btn-cta" onclick="goToScreen(2)">Prosseguir</button>
@@ -820,8 +918,16 @@
         function goToScreen(screenNum) {
             closeKeyboard();
             closeDeptoPicker();
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const target = document.getElementById('screen' + screenNum);
+            const current = document.querySelector('.screen.active:not(.leaving)');
+
+            if (current && current !== target) {
+                current.classList.add('leaving');
+                setTimeout(() => current.classList.remove('active', 'leaving'), 320);
+            }
+
+            target.classList.remove('active');
+            void target.offsetWidth; // reinicia a animação de entrada mesmo se a tela já estava marcada
             target.classList.add('active');
             target.scrollTop = 0;
             updateSteps(screenNum);
