@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0b">
+    <title>Votação Final • Atlhetica Nutrition®</title>
+
+    <style>
+        /* ===== FONTE CHAKRA PETCH (local, para funcionar sem internet no totem) ===== */
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-ExtraLight.ttf') format('truetype'); font-weight:200; font-style:normal; font-display:swap; }
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-Light.ttf') format('truetype'); font-weight:300; font-style:normal; font-display:swap; }
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-SemiBold.ttf') format('truetype'); font-weight:600; font-style:normal; font-display:swap; }
+        @font-face { font-family:'Chakra Petch'; src:url('chakra/ChakraPetch-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+
+        :root {
+            --fonte-padrao: 'Chakra Petch', sans-serif;
+
+            /* Paleta de marca (extraída do mascote/telas) */
+            --bg: #0a0a0b;
+            --ink: #f6f4ee;
+            --cream: #e8e4d9;
+            --cream-dim: rgba(232, 228, 217, .6);
+            --surface: rgba(13, 13, 14, .78);
+            --surface-strong: rgba(9, 9, 10, .94);
+            --line: rgba(232, 228, 217, .24);
+            --line-soft: rgba(255, 255, 255, .12);
+            --muted: #a9a79f;
+            --success: #3ecf7a;
+            --danger: #ff5b5b;
+
+            /* Raios e espaçamentos fluídos: se adaptam à resolução da tela */
+            --radius-xl: clamp(20px, 2.2vw, 36px);
+            --radius-lg: clamp(16px, 1.6vw, 26px);
+            --radius-md: clamp(10px, 1.1vw, 16px);
+            --radius-sm: clamp(8px, .9vw, 12px);
+
+            --space-1: clamp(6px, .6vw, 10px);
+            --space-2: clamp(10px, 1.2vw, 16px);
+            --space-3: clamp(16px, 1.9vw, 26px);
+            --space-4: clamp(22px, 2.6vw, 42px);
+            --space-5: clamp(30px, 3.8vw, 60px);
+
+            /* Tipografia fluída: escala com min(largura, altura) da tela do totem */
+            --fs-tag: clamp(.72rem, .5vw + .55rem, .95rem);
+            --fs-body: clamp(.95rem, .4vw + .8rem, 1.18rem);
+            --fs-lead: clamp(1.05rem, .55vw + .85rem, 1.4rem);
+            --fs-h1: clamp(1.7rem, 2.6vw + 1rem, 3.5rem);
+            --fs-h2: clamp(1.4rem, 1.8vw + 1rem, 2.5rem);
+            --fs-name: clamp(1.05rem, 1.3vw + .75rem, 1.75rem);
+
+            --topbar-h: clamp(52px, 6vh, 84px);
+            --vh: 1vh;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--fonte-padrao); -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            color: var(--ink);
+            overscroll-behavior: none;
+        }
+
+        body {
+            height: calc(var(--vh, 1vh) * 100);
+            height: 100svh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        input, textarea { user-select: text; -webkit-user-select: text; }
+
+        button, .vote-card, .key, .select-trigger, .depto-option, .keyboard-toggle-btn {
+            touch-action: manipulation;
+            cursor: pointer;
+        }
+
+        /* ===== TOPBAR: marca + indicador de etapas, fixo e sempre visível ===== */
+        .kiosk-topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--topbar-h);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 clamp(16px, 3vw, 40px);
+            background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
+            pointer-events: none;
+        }
+
+        .brand-mark {
+            font-size: clamp(.7rem, .9vw, .95rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--cream);
+            text-transform: uppercase;
+            opacity: .92;
+        }
+
+        .brand-mark span { color: var(--muted); font-weight: 500; }
+
+        .step-track { display: flex; align-items: center; gap: clamp(6px, .8vw, 12px); }
+
+        .step-dot {
+            width: clamp(8px, .9vw, 12px);
+            height: clamp(8px, .9vw, 12px);
+            border-radius: 50%;
+            background: rgba(255,255,255,.18);
+            border: 1.5px solid var(--line);
+            transition: all .35s ease;
+        }
+
+        .step-dot.done { background: var(--cream-dim); border-color: var(--cream-dim); }
+        .step-dot.active { background: var(--cream); border-color: var(--cream); width: clamp(20px, 2.4vw, 30px); border-radius: 6px; box-shadow: 0 0 14px rgba(232,228,217,.6); }
+
+        /* ===== TELAS ===== */
+        .screen {
+            display: none;
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            height: 100svh;
+            padding: calc(var(--topbar-h) + var(--space-3)) clamp(16px, 4vw, 64px) var(--space-4);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .screen::-webkit-scrollbar { display: none; }
+
+        .screen.active { display: flex; flex-direction: column; animation: screenIn .45s cubic-bezier(.22,1,.36,1); }
+
+        @keyframes screenIn {
+            from { opacity: 0; transform: translateY(18px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        #screen1 {
+            background-image: linear-gradient(115deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.32) 42%, rgba(0,0,0,.08) 70%), url('tela1.jpg');
+            justify-content: center;
+            align-items: flex-start;
+        }
+        #screen2 { background-image: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,0,0,.65)), url('tela2.jpg'); }
+        #screen3 { background-image: linear-gradient(to bottom, rgba(0,0,0,.4), rgba(0,0,0,.65)), url('tela3.jpg'); }
+        #screen4 { background-image: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.72)), url('tela4.jpg'); }
+
+        @media (orientation: portrait) {
+            #screen1 { justify-content: center; align-items: center; background-position: 78% center; }
+            #screen2, #screen3, #screen4 { background-position: center; }
+        }
+
+        /* ===== CARTÃO "VIDRO" ===== */
+        .glass-card {
+            background: var(--surface);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5) var(--space-4);
+            width: 100%;
+            max-width: min(92vw, 960px);
+            text-align: center;
+            backdrop-filter: blur(18px) saturate(1.4);
+            -webkit-backdrop-filter: blur(18px) saturate(1.4);
+            box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+            position: relative;
+            margin: auto;
+        }
+
+        .glass-card-side { max-width: min(92vw, 540px); text-align: left; }
+
+        .tag-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--fs-tag);
+            letter-spacing: 2.5px;
+            color: var(--bg);
+            background: var(--cream);
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-bottom: var(--space-3);
+        }
+
+        h1 {
+            font-size: var(--fs-h1);
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1.12;
+            margin-bottom: var(--space-2);
+            color: var(--ink);
+            letter-spacing: .3px;
+        }
+
+        h2.screen-title { font-size: var(--fs-h2); }
+
+        p.sub-heading {
+            font-size: var(--fs-lead);
+            color: var(--muted);
+            margin-bottom: var(--space-3);
+            line-height: 1.5;
+        }
+
+        .alert-box-notice {
+            background: rgba(232, 228, 217, .06);
+            border: 1.5px dashed var(--cream-dim);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin: var(--space-2) 0 var(--space-3);
+            text-align: left;
+        }
+
+        .alert-box-notice ul { list-style: none; }
+
+        .alert-box-notice li {
+            font-size: var(--fs-body);
+            color: var(--ink);
+            margin-bottom: var(--space-1);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-box-notice li:last-child { margin-bottom: 0; }
+
+        .cta-notice {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: linear-gradient(120deg, rgba(232,228,217,.14), rgba(232,228,217,.04));
+            border: 1px solid var(--cream-dim);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-3);
+            font-size: var(--fs-body);
+            color: var(--ink);
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .cta-notice .emoji { font-size: 1.6em; flex-shrink: 0; }
+
+        /* ===== FORMULÁRIO ===== */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-top: var(--space-2); text-align: left; }
+
+        @media (max-width: 640px), (orientation: portrait) and (max-width: 760px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .form-group { margin-bottom: var(--space-2); text-align: left; width: 100%; }
+
+        label {
+            display: block;
+            font-size: var(--fs-tag);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: var(--cream);
+            text-transform: uppercase;
+        }
+
+        .input-wrapper { position: relative; width: 100%; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: clamp(12px, 1.6vh, 18px) 48px clamp(12px, 1.6vh, 18px) 16px;
+            font-size: var(--fs-body);
+            background: rgba(255,255,255,.05);
+            border: 2px solid rgba(255,255,255,.16);
+            border-radius: var(--radius-md);
+            color: var(--ink);
+            outline: none;
+            transition: border-color .2s, background .2s;
+        }
+
+        input[type="text"]::placeholder { color: var(--muted); }
+
+        input[type="text"]:focus, input[type="text"].focused {
+            border-color: var(--cream);
+            background: rgba(255,255,255,.09);
+        }
+
+        .form-group.invalid input, .select-trigger.invalid {
+            border-color: var(--danger) !important;
+            animation: shake .4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .keyboard-toggle-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,.08);
+            border: none;
+            border-radius: var(--radius-sm);
+            width: clamp(34px, 4vh, 42px);
+            height: clamp(34px, 4vh, 42px);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: .85;
+            color: var(--ink);
+        }
+
+        /* ===== SELETOR CUSTOMIZADO (touch-friendly, substitui o <select> nativo) ===== */
+        .select-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: clamp(12px, 1.6vh, 18px) 16px;
+            font-size: var(--fs-body);
+            background: rgba(255,255,255,.05);
+            border: 2px solid rgba(255,255,255,.16);
+            border-radius: var(--radius-md);
+            color: var(--ink);
+            text-align: left;
+        }
+
+        .select-trigger.filled { color: var(--ink); border-color: rgba(232,228,217,.4); }
+        .select-trigger:not(.filled) span:first-child { color: var(--muted); }
+        .select-trigger .chevron { color: var(--cream); font-size: 1.2rem; flex-shrink: 0; }
+
+        /* ===== GRADE DE VOTAÇÃO ===== */
+        .vote-options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-3);
+            margin: var(--space-2) 0 var(--space-3) 0;
+            width: 100%;
+        }
+
+        @media (max-width: 720px) {
+            .vote-options-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
+
+        .vote-card {
+            background: rgba(255,255,255,.04);
+            border: 2px solid rgba(255,255,255,.14);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2);
+            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--ink);
+            position: relative;
+        }
+
+        .vote-card:active { transform: scale(.97); }
+
+        .vote-card.selected {
+            background: rgba(232, 228, 217, .16);
+            border-color: var(--cream);
+            box-shadow: 0 0 0 4px rgba(232,228,217,.14), 0 18px 40px rgba(232,228,217,.2);
+            transform: translateY(-4px);
+        }
+
+        .vote-check {
+            position: absolute;
+            top: 10px; right: 10px;
+            width: clamp(24px, 2.6vw, 32px);
+            height: clamp(24px, 2.6vw, 32px);
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            opacity: 0;
+            transform: scale(.4);
+            transition: all .2s ease;
+        }
+
+        .vote-card.selected .vote-check { opacity: 1; transform: scale(1); }
+
+        .mascot-img-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: var(--space-2);
+            background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.05), rgba(0,0,0,.4));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(6px, 1vw, 14px);
+        }
+
+        .mascot-img-container img { width: 100%; height: 100%; object-fit: contain; }
+
+        .mascot-name { font-size: var(--fs-name); font-weight: 700; text-transform: uppercase; color: var(--ink); }
+
+        /* ===== BOTÃO PRINCIPAL ===== */
+        .btn-cta {
+            width: 100%;
+            background: var(--cream);
+            color: var(--bg);
+            font-size: clamp(1.05rem, 1.3vw + .7rem, 1.4rem);
+            font-weight: 700;
+            padding: clamp(14px, 2vh, 20px);
+            border: none;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            box-shadow: 0 14px 32px rgba(232,228,217,.25);
+            margin-top: var(--space-2);
+            transition: transform .12s ease, box-shadow .12s ease;
+        }
+
+        .btn-cta:active { transform: scale(.97); box-shadow: 0 6px 16px rgba(232,228,217,.2); }
+        .btn-cta:disabled { opacity: .45; }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--cream);
+            border: 2px solid var(--line);
+            box-shadow: none;
+        }
+
+        /* ===== TELA DE SUCESSO ===== */
+        .success-icon {
+            width: clamp(64px, 8vw, 96px);
+            height: clamp(64px, 8vw, 96px);
+            border-radius: 50%;
+            background: var(--cream);
+            color: var(--bg);
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-3);
+            animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .reload-bar { height: 5px; width: 100%; background: rgba(255,255,255,.1); border-radius: 5px; overflow: hidden; margin-top: var(--space-4); }
+        .reload-bar-fill { height: 100%; width: 100%; background: var(--cream); transform-origin: left; animation: reloadCountdown 4s linear forwards; }
+
+        @keyframes reloadCountdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+        /* ===== TECLADO VIRTUAL TOUCH ===== */
+        #virtual-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #0a0d12;
+            border-top: 3px solid var(--cream);
+            padding: clamp(8px, 1.4vh, 16px) clamp(8px, 1.5vw, 16px);
+            padding-bottom: max(clamp(8px, 1.4vh, 16px), env(safe-area-inset-bottom));
+            z-index: 900;
+            box-shadow: 0 -20px 50px rgba(0,0,0,.9);
+            animation: kbUp .25s ease;
+        }
+
+        @keyframes kbUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .keyboard-row { display: flex; justify-content: center; margin-bottom: clamp(4px, .8vh, 7px); gap: clamp(3px, .5vw, 6px); }
+
+        .key {
+            background: rgba(255,255,255,.08);
+            color: var(--ink);
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: var(--radius-sm);
+            padding: clamp(9px, 1.6vh, 15px) 0;
+            font-size: clamp(.9rem, 1.4vh + .5rem, 1.25rem);
+            font-weight: 700;
+            flex: 1;
+            max-width: 60px;
+            text-align: center;
+            transition: background .1s, transform .1s;
+        }
+
+        .key:active { background: var(--cream); color: var(--bg); transform: scale(.94); }
+
+        .key.accent { font-size: clamp(.8rem, 1.2vh + .4rem, 1.1rem); max-width: 52px; opacity: .92; }
+        .key.action-btn { background: rgba(232,228,217,.18); border-color: var(--cream-dim); font-size: clamp(.72rem, 1vh + .4rem, .95rem); max-width: 120px; }
+        .key.space { flex: 4; max-width: 320px; font-size: clamp(.75rem, 1vh + .4rem, .95rem); background: rgba(255,255,255,.12); }
+        .key.confirm-btn { background: var(--success); border-color: var(--success); color: #06210f; max-width: 120px; }
+        .key.clear-btn { background: var(--danger); border-color: var(--danger); color: #2a0505; max-width: 95px; font-size: clamp(.7rem, 1vh + .35rem, .9rem); }
+
+        /* ===== SELETOR DE DEPARTAMENTO (overlay) ===== */
+        .picker-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.72);
+            backdrop-filter: blur(6px);
+            z-index: 950;
+            align-items: flex-end;
+            justify-content: center;
+            padding: clamp(10px, 2vw, 24px);
+        }
+
+        .picker-overlay.open { display: flex; animation: fadeBg .2s ease; }
+
+        @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+
+        .picker-sheet {
+            width: 100%;
+            max-width: 720px;
+            max-height: min(78vh, 78dvh);
+            background: var(--surface-strong);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-xl) var(--radius-xl) var(--radius-md) var(--radius-md);
+            padding: var(--space-3);
+            display: flex;
+            flex-direction: column;
+            animation: sheetUp .3s cubic-bezier(.22,1,.36,1);
+        }
+
+        @keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .picker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid var(--line-soft);
+        }
+
+        .picker-header span { font-size: var(--fs-tag); font-weight: 700; letter-spacing: 1.5px; color: var(--cream); text-transform: uppercase; }
+
+        .picker-close {
+            background: rgba(255,255,255,.08);
+            border: none;
+            color: var(--ink);
+            width: clamp(32px, 4vh, 40px);
+            height: clamp(32px, 4vh, 40px);
+            border-radius: 50%;
+            font-size: 1.1rem;
+        }
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: var(--space-2);
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .depto-option {
+            background: rgba(255,255,255,.05);
+            border: 2px solid rgba(255,255,255,.14);
+            border-radius: var(--radius-md);
+            padding: clamp(12px, 1.8vh, 18px) 14px;
+            color: var(--ink);
+            font-size: var(--fs-body);
+            font-weight: 600;
+            text-align: center;
+            transition: all .15s ease;
+        }
+
+        .depto-option:active { transform: scale(.96); }
+        .depto-option.selected { background: var(--cream); border-color: var(--cream); color: var(--bg); }
+
+        /* ===== TOAST DE VALIDAÇÃO ===== */
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: clamp(24px, 5vh, 48px);
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface-strong);
+            border: 1.5px solid var(--danger);
+            color: var(--ink);
+            padding: 14px 22px;
+            border-radius: 50px;
+            font-size: var(--fs-body);
+            font-weight: 600;
+            box-shadow: 0 20px 45px rgba(0,0,0,.6);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            max-width: min(90vw, 520px);
+            text-align: center;
+        }
+
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== AJUSTES DE ORIENTAÇÃO / RESOLUÇÃO ===== */
+        @media (max-width: 640px) {
+            .glass-card-side { max-width: 100%; text-align: center; }
+            .vote-options-grid { grid-template-columns: 1fr; gap: var(--space-2); }
+            .mascot-img-container { aspect-ratio: 16 / 10; }
+        }
+
+        @media (max-height: 480px) {
+            :root { --topbar-h: 44px; }
+            .glass-card { padding: var(--space-3) var(--space-3); }
+            .mascot-img-container { aspect-ratio: 16 / 9; }
+        }
+
+        @media (min-width: 1400px) {
+            .vote-options-grid { max-width: 1100px; margin-left: auto; margin-right: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="kiosk-topbar">
+        <div class="brand-mark">ATLHETICA <span>NUTRITION®</span></div>
+        <div class="step-track" id="step-track">
+            <span class="step-dot" data-step="1"></span>
+            <span class="step-dot" data-step="2"></span>
+            <span class="step-dot" data-step="3"></span>
+            <span class="step-dot" data-step="4"></span>
+        </div>
+    </header>
+
+    <!-- TELA 01 - ABERTURA -->
+    <div id="screen1" class="screen active">
+        <div class="glass-card glass-card-side">
+            <div class="tag-header">Atlhetica Nutrition® • Concurso Cultural</div>
+            <h1>Escolha do novo mascote!</h1>
+            <p class="sub-heading">
+                Durante o nosso <strong>Mini Workshop Especial Dia do Amigo</strong>, recebemos diversas sugestões de nomes para o novo mascote da Atlhetica Nutrition®. Depois de analisar todas as ideias, chegamos aos 3 nomes finalistas.
+            </p>
+            <div class="cta-notice">
+                <span class="emoji">🔥</span>
+                <strong>Agora chegou a hora de escolher o vencedor. E essa decisão é de todos nós.</strong>
+            </div>
+
+            <button class="btn-cta" onclick="goToScreen(2)">Prosseguir</button>
+        </div>
+    </div>
+
+    <!-- TELA 02 - ORIENTAÇÕES + IDENTIFICAÇÃO -->
+    <div id="screen2" class="screen">
+        <div class="glass-card" style="max-width: min(92vw, 780px);">
+            <div class="tag-header">Identificação</div>
+            <h2 class="screen-title">Identifique-se para votar</h2>
+            <p class="sub-heading" style="margin-bottom: var(--space-2);">Para garantir a transparência do concurso, cada colaborador tem direito a apenas 1 (um) voto.</p>
+
+            <div class="alert-box-notice">
+                <ul>
+                    <li>⚠️ <strong>Voto único:</strong> votos duplicados serão filtrados na apuração final.</li>
+                    <li>🤝 <strong>Colaboração:</strong> preencha seus dados corretamente abaixo.</li>
+                </ul>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group" id="group-nome">
+                    <label>Seu nome completo *</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="input-nome" placeholder="Toque para escrever..." autocomplete="off">
+                        <button class="keyboard-toggle-btn" onclick="openKeyboard('input-nome')" title="Abrir teclado">⌨️</button>
+                    </div>
+                </div>
+
+                <div class="form-group" id="group-depto">
+                    <label>Seu departamento *</label>
+                    <button type="button" class="select-trigger" id="depto-trigger" onclick="openDeptoPicker()">
+                        <span id="depto-trigger-label">Selecione seu departamento...</span>
+                        <span class="chevron">⌄</span>
+                    </button>
+                    <select id="select-depto" hidden aria-hidden="true" tabindex="-1">
+                        <option value="">Selecione seu departamento...</option>
+                        <option value="Comercial">Comercial</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="TI">TI</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Jurídico">Jurídico</option>
+                        <option value="Produção">Produção</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Faturamento">Faturamento</option>
+                        <option value="Logística">Logística</option>
+                        <option value="P&D">P&D</option>
+                        <option value="Regulatórios">Regulatórios</option>
+                        <option value="Qualidade">Qualidade</option>
+                        <option value="Compras">Compras</option>
+                        <option value="Controles Internos">Controles Internos</option>
+                        <option value="Controladoria">Controladoria</option>
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Almoxarifado P.A.">Almoxarifado P.A.</option>
+                        <option value="Almoxarifado M.P.">Almoxarifado M.P.</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-cta" onclick="validarTela2()">Ir para a votação</button>
+        </div>
+    </div>
+
+    <!-- TELA 03 - ESCOLHA DO MASCOTE -->
+    <div id="screen3" class="screen">
+        <div class="glass-card">
+            <div class="tag-header">Faça sua escolha</div>
+            <h2 class="screen-title" style="margin-bottom: 6px;">Qual é o seu mascote favorito?</h2>
+            <p class="sub-heading" style="margin-bottom: var(--space-2);">Toque na opção desejada e confirme o seu voto.</p>
+
+            <div class="vote-options-grid">
+                <div class="vote-card" onclick="selecionarNome(this, 'RICK')">
+                    <span class="vote-check">✓</span>
+                    <div class="mascot-img-container">
+                        <img src="mascote1.png" alt="Rick" onerror="this.style.display='none'">
+                    </div>
+                    <div class="mascot-name">Rick</div>
+                </div>
+
+                <div class="vote-card" onclick="selecionarNome(this, 'STEVE BALL')">
+                    <span class="vote-check">✓</span>
+                    <div class="mascot-img-container">
+                        <img src="mascote2.png" alt="Steve Ball" onerror="this.style.display='none'">
+                    </div>
+                    <div class="mascot-name">Steve Ball</div>
+                </div>
+
+                <div class="vote-card" onclick="selecionarNome(this, 'SCOOP')">
+                    <span class="vote-check">✓</span>
+                    <div class="mascot-img-container">
+                        <img src="mascote3.png" alt="Scoop" onerror="this.style.display='none'">
+                    </div>
+                    <div class="mascot-name">Scoop</div>
+                </div>
+            </div>
+
+            <button class="btn-cta" id="btn-enviar" onclick="enviarVoto()">Confirmar meu voto</button>
+        </div>
+    </div>
+
+    <!-- TELA 04 - AGRADECIMENTO -->
+    <div id="screen4" class="screen">
+        <div class="glass-card">
+            <div class="success-icon">✓</div>
+            <h1 style="color: var(--cream); font-size: var(--fs-h2); margin-bottom: var(--space-2);">Voto registrado com sucesso!</h1>
+            <p style="font-size: var(--fs-lead); margin-bottom: var(--space-2); line-height: 1.5; color: var(--ink);">
+                Obrigado por fazer parte dessa escolha tão especial para o time Atlhetica Nutrition®!
+            </p>
+            <p style="color: var(--muted); font-size: var(--fs-body); line-height: 1.5; margin-bottom: var(--space-2);">
+                O grande vencedor será anunciado oficialmente no dia <strong>31 de julho</strong>!
+            </p>
+            <p style="font-size: var(--fs-lead); font-weight: 700; color: var(--cream);">Até lá!</p>
+            <div class="reload-bar"><div class="reload-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <!-- SELETOR DE DEPARTAMENTO (TOUCH) -->
+    <div class="picker-overlay" id="depto-picker" onclick="if(event.target===this) closeDeptoPicker()">
+        <div class="picker-sheet">
+            <div class="picker-header">
+                <span>Selecione seu departamento</span>
+                <button class="picker-close" onclick="closeDeptoPicker()">✕</button>
+            </div>
+            <div class="picker-grid" id="depto-grid"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" role="alert" aria-live="polite"></div>
+
+    <!-- TECLADO VIRTUAL TOUCH -->
+    <div id="virtual-keyboard">
+        <div class="keyboard-row">
+            <div class="key" onclick="keyPress('1')">1</div><div class="key" onclick="keyPress('2')">2</div><div class="key" onclick="keyPress('3')">3</div><div class="key" onclick="keyPress('4')">4</div><div class="key" onclick="keyPress('5')">5</div><div class="key" onclick="keyPress('6')">6</div><div class="key" onclick="keyPress('7')">7</div><div class="key" onclick="keyPress('8')">8</div><div class="key" onclick="keyPress('9')">9</div><div class="key" onclick="keyPress('0')">0</div>
+            <div class="key action-btn" onclick="keyPress('BACKSPACE')">⌫ Apagar</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key" onclick="keyPress('Q')">Q</div><div class="key" onclick="keyPress('W')">W</div><div class="key" onclick="keyPress('E')">E</div><div class="key" onclick="keyPress('R')">R</div><div class="key" onclick="keyPress('T')">T</div><div class="key" onclick="keyPress('Y')">Y</div><div class="key" onclick="keyPress('U')">U</div><div class="key" onclick="keyPress('I')">I</div><div class="key" onclick="keyPress('O')">O</div><div class="key" onclick="keyPress('P')">P</div>
+            <div class="key clear-btn" onclick="keyPress('CLEAR')">Limpar</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key" onclick="keyPress('A')">A</div><div class="key" onclick="keyPress('S')">S</div><div class="key" onclick="keyPress('D')">D</div><div class="key" onclick="keyPress('F')">F</div><div class="key" onclick="keyPress('G')">G</div><div class="key" onclick="keyPress('H')">H</div><div class="key" onclick="keyPress('J')">J</div><div class="key" onclick="keyPress('K')">K</div><div class="key" onclick="keyPress('L')">L</div><div class="key" onclick="keyPress('Ç')">Ç</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key" onclick="keyPress('Z')">Z</div><div class="key" onclick="keyPress('X')">X</div><div class="key" onclick="keyPress('C')">C</div><div class="key" onclick="keyPress('V')">V</div><div class="key" onclick="keyPress('B')">B</div><div class="key" onclick="keyPress('N')">N</div><div class="key" onclick="keyPress('M')">M</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key accent" onclick="keyPress('Á')">Á</div><div class="key accent" onclick="keyPress('Â')">Â</div><div class="key accent" onclick="keyPress('Ã')">Ã</div><div class="key accent" onclick="keyPress('É')">É</div><div class="key accent" onclick="keyPress('Ê')">Ê</div><div class="key accent" onclick="keyPress('Í')">Í</div><div class="key accent" onclick="keyPress('Ó')">Ó</div><div class="key accent" onclick="keyPress('Ô')">Ô</div><div class="key accent" onclick="keyPress('Õ')">Õ</div><div class="key accent" onclick="keyPress('Ú')">Ú</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key space" onclick="keyPress('SPACE')">Espaço</div>
+            <div class="key confirm-btn" onclick="closeKeyboard()">OK</div>
+        </div>
+    </div>
+
+    <script>
+        const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbwK-GhFZj-WupD3WaGgjBK1iHfPnvkFra_TsPmabjUKq6yyMDQNBcY7ARz3bf1L-fcV/exec";
+
+        let nomeEscolhido = "";
+        let activeInputId = null;
+        let idleTimer = null;
+        const IDLE_LIMIT_MS = 90000;
+
+        /* Corrige a altura real da viewport em navegadores de totem onde 100vh é impreciso */
+        function setViewportHeight() {
+            document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+        }
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+
+        function goToScreen(screenNum) {
+            closeKeyboard();
+            closeDeptoPicker();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById('screen' + screenNum);
+            target.classList.add('active');
+            target.scrollTop = 0;
+            updateSteps(screenNum);
+            resetIdleTimer();
+        }
+
+        function updateSteps(n) {
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                const step = Number(dot.dataset.step);
+                dot.classList.toggle('active', step === n);
+                dot.classList.toggle('done', step < n);
+            });
+        }
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            const current = document.querySelector('.screen.active');
+            if (!current || current.id === 'screen1') return;
+            idleTimer = setTimeout(() => {
+                resetFormState();
+                goToScreen(1);
+            }, IDLE_LIMIT_MS);
+        }
+
+        function resetFormState() {
+            const inputNome = document.getElementById('input-nome');
+            if (inputNome) inputNome.value = '';
+            const select = document.getElementById('select-depto');
+            if (select) select.value = '';
+            updateDeptoLabel('');
+            document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('selected'));
+            nomeEscolhido = '';
+        }
+
+        ['touchstart', 'mousedown', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, resetIdleTimer, { passive: true });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputNome = document.getElementById('input-nome');
+            if (inputNome) {
+                inputNome.addEventListener('focus', () => openKeyboard('input-nome'));
+                inputNome.addEventListener('touchstart', () => openKeyboard('input-nome'));
+            }
+            buildDeptoPicker();
+            updateSteps(1);
+        });
+
+        /* ===== TECLADO VIRTUAL ===== */
+        function openKeyboard(inputId) {
+            activeInputId = inputId;
+            document.querySelectorAll('input').forEach(i => i.classList.remove('focused'));
+
+            const targetInput = document.getElementById(inputId);
+            if (targetInput) {
+                targetInput.classList.add('focused');
+                setTimeout(() => targetInput.scrollIntoView({ block: 'center', behavior: 'smooth' }), 150);
+            }
+            document.getElementById('virtual-keyboard').style.display = 'block';
+        }
+
+        function closeKeyboard() {
+            activeInputId = null;
+            document.querySelectorAll('input').forEach(i => i.classList.remove('focused'));
+            document.getElementById('virtual-keyboard').style.display = 'none';
+        }
+
+        function keyPress(key) {
+            if (!activeInputId) return;
+            const input = document.getElementById(activeInputId);
+
+            if (key === 'BACKSPACE') {
+                input.value = input.value.slice(0, -1);
+            } else if (key === 'CLEAR') {
+                input.value = '';
+            } else if (key === 'SPACE') {
+                input.value += ' ';
+            } else {
+                input.value += key;
+            }
+        }
+
+        /* ===== SELETOR DE DEPARTAMENTO CUSTOMIZADO ===== */
+        function buildDeptoPicker() {
+            const select = document.getElementById('select-depto');
+            const grid = document.getElementById('depto-grid');
+            Array.from(select.options).forEach(opt => {
+                if (!opt.value) return;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'depto-option';
+                btn.textContent = opt.textContent;
+                btn.dataset.value = opt.value;
+                btn.onclick = () => {
+                    select.value = opt.value;
+                    updateDeptoLabel(opt.value);
+                    closeDeptoPicker();
+                    document.getElementById('group-depto').classList.remove('invalid');
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateDeptoLabel(value) {
+            const label = document.getElementById('depto-trigger-label');
+            const trigger = document.getElementById('depto-trigger');
+            if (value) {
+                label.textContent = value;
+                trigger.classList.add('filled');
+            } else {
+                label.textContent = 'Selecione seu departamento...';
+                trigger.classList.remove('filled');
+            }
+            document.querySelectorAll('.depto-option').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.value === value);
+            });
+        }
+
+        function openDeptoPicker() {
+            closeKeyboard();
+            document.getElementById('depto-picker').classList.add('open');
+        }
+
+        function closeDeptoPicker() {
+            document.getElementById('depto-picker').classList.remove('open');
+        }
+
+        /* ===== TOAST DE VALIDAÇÃO ===== */
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
+        function validarTela2() {
+            const nomeColaborador = document.getElementById('input-nome').value.trim();
+            const deptoColaborador = document.getElementById('select-depto').value;
+
+            document.getElementById('group-nome').classList.toggle('invalid', !nomeColaborador);
+            document.getElementById('group-depto').classList.toggle('invalid', !deptoColaborador);
+
+            if (!nomeColaborador || !deptoColaborador) {
+                showToast('Preencha seu nome e selecione o departamento para continuar.');
+                return;
+            }
+
+            goToScreen(3);
+        }
+
+        function selecionarNome(element, nome) {
+            document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            nomeEscolhido = nome;
+        }
+
+        function enviarVoto() {
+            const nomeColaborador = document.getElementById('input-nome').value.trim();
+            const deptoColaborador = document.getElementById('select-depto').value;
+
+            if (!nomeEscolhido) {
+                showToast('Selecione um dos 3 mascotes para votar!');
+                return;
+            }
+
+            const registro = {
+                dataHora: new Date().toLocaleString('pt-BR'),
+                sugestaoMascote: "VOTO: " + nomeEscolhido,
+                colaborador: nomeColaborador,
+                departamento: deptoColaborador
+            };
+
+            // Backup Local
+            let bancoVotos = JSON.parse(localStorage.getItem('banco_votos_mascote')) || [];
+            bancoVotos.push(registro);
+            localStorage.setItem('banco_votos_mascote', JSON.stringify(bancoVotos));
+
+            // Envio para o Google Sheets em tempo real
+            if (URL_GOOGLE_SHEETS && URL_GOOGLE_SHEETS !== "") {
+                fetch(URL_GOOGLE_SHEETS, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(registro)
+                });
+            }
+
+            goToScreen(4);
+            clearTimeout(idleTimer);
+
+            setTimeout(() => {
+                location.reload();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
